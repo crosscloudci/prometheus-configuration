@@ -60,7 +60,7 @@ container:
 
 
 Dashboard:
-  image: registry.cncf.ci/cncf/cross-cloud:go
+  image: crosscloudci/debian-go
   stage: Update-Dashboard
   script:
     - echo 'true'
