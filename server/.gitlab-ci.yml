@@ -42,7 +42,7 @@ container:
   stage: Package
   image: crosscloudci/debian-docker
   script:
-    - pwd
+    - apt update && apt install -y make
     - IMAGE_TAG=${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHA_SHORT}.${CI_JOB_ID}
     - make -j $(getconf _NPROCESSORS_ONLN) docker DOCKER_IMAGE_NAME="$CI_REGISTRY_IMAGE" DOCKER_IMAGE_TAG="$IMAGE_TAG"
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
