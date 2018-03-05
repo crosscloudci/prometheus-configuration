@@ -24,12 +24,11 @@ before_script:
   - source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd
 
 compile:
-  image: crosscloudci/debian-go
+  image: golang:stretch
   stage: Build
   variables:
     CGO_ENABLED: '0'
   script:
-    - ls -lah
     - ln -s /builds /go/src/github.com
     - cd /go/src/github.com/prometheus/prometheus
     - make -j $(getconf _NPROCESSORS_ONLN) build
@@ -44,9 +43,9 @@ container:
   image: crosscloudci/debian-docker
   script:
     - IMAGE_TAG=${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHA_SHORT}.${CI_JOB_ID}
-    - cd /builds/prometheus/prometheus
+    - cd /go/src/github.com/prometheus/prometheus
+    - make -j $(getconf _NPROCESSORS_ONLN) docker DOCKER_IMAGE_NAME="$CI_REGISTRY_IMAGE" DOCKER_IMAGE_TAG="$IMAGE_TAG"
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
-    - docker build -t "$CI_REGISTRY_IMAGE:$IMAGE_TAG" .
     - docker push "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
     - echo export IMAGE_ARGS=\"--set server.image.repository=$CI_REGISTRY_IMAGE\" | tee release.env
     - echo export TAG_ARGS=\"--set server.image.tag=$IMAGE_TAG\" | tee -a release.env
@@ -61,7 +60,7 @@ container:
 
 
 Dashboard:
-  image: crosscloudci/debian-go
+  image: golang:stretch
   stage: Update-Dashboard
   script:
     - echo 'true'
