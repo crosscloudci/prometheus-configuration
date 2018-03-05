@@ -1,7 +1,6 @@
 stages:
   - Build
   - Package
-  - Update-Dashboard
 
 
 before_script:
@@ -57,10 +56,3 @@ container:
     expire_in: 4 weeks
     paths:
       - release.env
-
-
-Dashboard:
-  image: golang:stretch
-  stage: Update-Dashboard
-  script:
-    - echo 'true'
