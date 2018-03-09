@@ -8,11 +8,11 @@ before_script:
   - export BASE_URL=${BASE_URL:-$(echo $CI_PROJECT_URL |  cut -d'/' -f1-3)}
   - >
     if [ -z "$CROSS_CLOUD_YML" ]; then
-       if [ "BASE_URL" == "https://gitlab.cncf.ci" ]; then
+       if [ "$BASE_URL" == "https://gitlab.cncf.ci" ]; then
           export CROSS_CLOUD_YML="https://raw.githubusercontent.com/CrossCloudCI/cncf-configuration/production/cross-cloud.yml"
-       elif [ "BASE_URL" == "https://gitlab.staging.cncf.ci" ]; then
+       elif [ "$BASE_URL" == "https://gitlab.staging.cncf.ci" ]; then
           export CROSS_CLOUD_YML="https://raw.githubusercontent.com/CrossCloudCI/cncf-configuration/staging/cross-cloud.yml"
-       elif [ "BASE_URL" == "https://gitlab.cidev.cncf.ci" ]; then
+       elif [ "$BASE_URL" == "https://gitlab.cidev.cncf.ci" ]; then
           export CROSS_CLOUD_YML="https://raw.githubusercontent.com/CrossCloudCI/cncf-configuration/integration/cross-cloud.yml"
        else
           export CROSS_CLOUD_YML="https://raw.githubusercontent.com/CrossCloudCI/cncf-configuration/master/cross-cloud.yml"
