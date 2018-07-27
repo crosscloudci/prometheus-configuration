@@ -43,7 +43,12 @@ container:
   script:
     - apt update && apt install -y make
     - IMAGE_TAG=${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHA_SHORT}.${CI_JOB_ID}
-    - make -j $(getconf _NPROCESSORS_ONLN) docker DOCKER_REPO="" DOCKER_IMAGE_NAME="$CI_REGISTRY_IMAGE" DOCKER_IMAGE_TAG="$IMAGE_TAG"
+    - >
+      if [ "$CI_COMMIT_REF_SLUG" == "master" ]; then
+         make -j $(getconf _NPROCESSORS_ONLN) docker DOCKER_REPO="$CI_REGISTRY_IMAGE" DOCKER_IMAGE_TAG="$IMAGE_TAG"
+      else
+         make -j $(getconf _NPROCESSORS_ONLN) docker DOCKER_IMAGE_NAME="$CI_REGISTRY_IMAGE" DOCKER_IMAGE_TAG="$IMAGE_TAG"
+      fi
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
     - docker push "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
     - echo export IMAGE_ARGS=\"--set server.image.repository=$CI_REGISTRY_IMAGE\" | tee release.env
