@@ -45,7 +45,7 @@ container:
     - IMAGE_TAG=${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHA_SHORT}.${CI_JOB_ID}
     - >
       if [ "$CI_COMMIT_REF_SLUG" == "master" ]; then
-         make -j $(getconf _NPROCESSORS_ONLN) docker DOCKER_REPO="$CI_REGISTRY_IMAGE" DOCKER_IMAGE_TAG="$IMAGE_TAG"
+         make -j $(getconf _NPROCESSORS_ONLN) docker DOCKER_REPO="$CI_REGISTRY" DOCKER_IMAGE_NAME="$CI_PROJECT_NAME/$CI_PROJECT_NAME" DOCKER_IMAGE_TAG="$IMAGE_TAG"
       else
          make -j $(getconf _NPROCESSORS_ONLN) docker DOCKER_IMAGE_NAME="$CI_REGISTRY_IMAGE" DOCKER_IMAGE_TAG="$IMAGE_TAG"
       fi
