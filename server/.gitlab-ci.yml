@@ -23,7 +23,7 @@ before_script:
   - source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd
 
 compile:
-  image: crosscloudci/debian-go:stretch
+  image: crosscloudci/debian-go:1.11.4-stretch
   stage: Build
   variables:
     CGO_ENABLED: '0'
