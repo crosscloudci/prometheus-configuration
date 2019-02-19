@@ -1,5 +1,5 @@
 project:
-  logo_url: "https://raw.githubusercontent.com/cncf/artwork/1d4e7cf3b60af40e008b2e2413f7a2d1ff784b52/prometheus/icon/color/prometheus-icon-color.png"
-  display_name: Prometheus
-  sub_title: Monitoring
-  project_url: "https://github.com/prometheus/prometheus"
+  logo_url: "https://raw.githubusercontent.com/cncf/artwork/bcabeb288a5c934278acd20b479ab8da494f2711/prometheus/icon/black/prometheus-icon-black.png"
+  display_name: Prometheusv2
+  sub_title: MonitoringTest
+  project_url: "https://github.com/prometheus/prometheus/releases"
