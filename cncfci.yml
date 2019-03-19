@@ -1,5 +1,5 @@
 project:
   logo_url: "https://raw.githubusercontent.com/cncf/artwork/bcabeb288a5c934278acd20b479ab8da494f2711/prometheus/icon/black/prometheus-icon-black.png"
-  display_name: PrometheusStaging
-  sub_title: MonitoringStaging
+  display_name: PrometheusStaging2
+  sub_title: MonitoringStaging2
   project_url: "https://github.com/prometheus/prometheus/releases"
