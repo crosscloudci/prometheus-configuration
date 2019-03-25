@@ -32,7 +32,12 @@ compile:
     - sed -i '5s|.*|github.com/apache/thrift v0.0.0-20180902110319-2566ecd5d999/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=|' ./go.sum
     - ln -s /builds /go/src/github.com
     - cd /go/src/github.com/prometheus/prometheus
-    - make -j $(getconf _NPROCESSORS_ONLN) deps
+    - >
+      if [ "$CI_COMMIT_REF_NAME" !== "master" ]; then
+        GO111MODULE=on go mod download 
+      else
+        make -j $(getconf _NPROCESSORS_ONLN) deps
+      fi
     - make -j $(getconf _NPROCESSORS_ONLN) build
     - make -j $(getconf _NPROCESSORS_ONLN) test
   artifacts:
