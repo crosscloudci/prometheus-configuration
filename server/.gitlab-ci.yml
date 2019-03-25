@@ -26,7 +26,7 @@ compile:
   image: crosscloudci/debian-go:1.11.4-stretch
   stage: Build
   variables:
-    CGO_ENABLED: '0'
+    CGO_ENABLED: '1'
   script:
     - sed -i -e "\$areplace git.apache.org/thrift.git => github.com/apache/thrift v0.0.0-20180902110319-2566ecd5d999" ./go.mod
     - sed -i '5s|.*|github.com/apache/thrift v0.0.0-20180902110319-2566ecd5d999/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=|' ./go.sum
