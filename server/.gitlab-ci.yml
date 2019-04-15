@@ -29,6 +29,7 @@ compile:
   variables:
     CGO_ENABLED: '1'
   script:
+    - apt update && apt install make
     - >
       if [ "$ARCH" == "arm64" ]; then
         echo 'ARCH set to arm64'
