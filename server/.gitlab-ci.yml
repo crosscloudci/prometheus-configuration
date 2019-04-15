@@ -24,7 +24,7 @@ before_script:
 
 compile:
   # image: crosscloudci/debian-go:1.11.4-stretch
-  image: crosscloudci/debian-docker
+  image: crosscloudci/debian-docker-go:latest
   stage: Build
   variables:
     CGO_ENABLED: '1'
