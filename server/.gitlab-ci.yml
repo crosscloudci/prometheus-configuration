@@ -28,6 +28,15 @@ compile:
   variables:
     CGO_ENABLED: '1'
   script:
+    - >
+      if [ "$ARCH" == "arm64" ]; then
+        echo 'ARCH set to arm64'
+        make promu
+        promu crossbuild -v
+        sleep 1000000
+      else
+        continue
+      fi
     - sed -i -e "\$areplace git.apache.org/thrift.git => github.com/apache/thrift v0.0.0-20180902110319-2566ecd5d999" ./go.mod
     - sed -i '5s|.*|github.com/apache/thrift v0.0.0-20180902110319-2566ecd5d999/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=|' ./go.sum
     - ln -s /builds /go/src/github.com
