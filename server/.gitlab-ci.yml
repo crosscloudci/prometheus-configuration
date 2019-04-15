@@ -23,7 +23,6 @@ before_script:
   - source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd
 
 compile:
-  # image: crosscloudci/debian-go:1.11.4-stretch
   image: crosscloudci/debian-docker-go:latest
   stage: Build
   variables:
@@ -34,25 +33,20 @@ compile:
         echo 'ARCH set to arm64'
         make promu
         promu crossbuild -v
-        docker run --privileged linuxkit/binfmt:v0.6
-        IMAGE_TAG=${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHA_SHORT}.${CI_JOB_ID}
-        make -j $(getconf _NPROCESSORS_ONLN) docker DOCKER_REPO="$CI_REGISTRY" DOCKER_IMAGE_NAME="$CI_PROJECT_NAME/$CI_PROJECT_NAME" DOCKER_IMAGE_TAG="$IMAGE_TAG" DOCKER_ARCHS="arm64" || true
-        sleep 1000000
       else
-        continue
+        echo 'Default to amd64 (Intel)'
+        # ln -s /builds /go/src/github.com
+        # cd /go/src/github.com/prometheus/prometheus
+        if [ "$CI_COMMIT_REF_NAME" != "master" ]; then
+          GO111MODULE=on go mod download 
+        else
+          make -j $(getconf _NPROCESSORS_ONLN) deps
+        fi
+        make -j $(getconf _NPROCESSORS_ONLN) build
+        make -j $(getconf _NPROCESSORS_ONLN) test
       fi
-    - sed -i -e "\$areplace git.apache.org/thrift.git => github.com/apache/thrift v0.0.0-20180902110319-2566ecd5d999" ./go.mod
-    - sed -i '5s|.*|github.com/apache/thrift v0.0.0-20180902110319-2566ecd5d999/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=|' ./go.sum
-    - ln -s /builds /go/src/github.com
-    - cd /go/src/github.com/prometheus/prometheus
-    - >
-      if [ "$CI_COMMIT_REF_NAME" != "master" ]; then
-        GO111MODULE=on go mod download 
-      else
-        make -j $(getconf _NPROCESSORS_ONLN) deps
-      fi
-    - make -j $(getconf _NPROCESSORS_ONLN) build
-    - make -j $(getconf _NPROCESSORS_ONLN) test
+    #- sed -i -e "\$areplace git.apache.org/thrift.git => github.com/apache/thrift v0.0.0-20180902110319-2566ecd5d999" ./go.mod
+    #- sed -i '5s|.*|github.com/apache/thrift v0.0.0-20180902110319-2566ecd5d999/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=|' ./go.sum
   artifacts:
     name: "${CI_JOB_NAME}_${CI_COMMIT_REF_NAME}"
     untracked: true
@@ -65,11 +59,23 @@ container:
   script:
     - apt update && apt install -y make
     - IMAGE_TAG=${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHA_SHORT}.${CI_JOB_ID}
-    - make -j $(getconf _NPROCESSORS_ONLN) docker DOCKER_REPO="$CI_REGISTRY" DOCKER_IMAGE_NAME="$CI_PROJECT_NAME/$CI_PROJECT_NAME" DOCKER_IMAGE_TAG="$IMAGE_TAG"
-    - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
-    - docker push "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
-    - echo export IMAGE_ARGS=\"--set server.image.repository=$CI_REGISTRY_IMAGE\" | tee release.env
-    - echo export TAG_ARGS=\"--set server.image.tag=$IMAGE_TAG\" | tee -a release.env
+    - >
+      if [ "$ARCH" == "arm64" ]; then
+        echo 'ARCH set to arm64'
+        docker run --privileged linuxkit/binfmt:v0.6
+        make -j $(getconf _NPROCESSORS_ONLN) docker DOCKER_REPO="$CI_REGISTRY" DOCKER_IMAGE_NAME="$CI_PROJECT_NAME/$CI_PROJECT_NAME" DOCKER_IMAGE_TAG="$IMAGE_TAG" DOCKER_ARCHS="arm64"
+        echo export IMAGE_ARGS=\"--set server.image.repository=$CI_REGISTRY_IMAGE-linux-arm64\" | tee release.env
+        echo export TAG_ARGS=\"--set server.image.tag=$IMAGE_TAG\" | tee -a release.env
+        docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
+        docker push "$CI_REGISTRY_IMAGE-linux-arm64:$IMAGE_TAG"
+      else
+        echo 'Default to amd64 (Intel)'
+        make -j $(getconf _NPROCESSORS_ONLN) docker DOCKER_REPO="$CI_REGISTRY" DOCKER_IMAGE_NAME="$CI_PROJECT_NAME/$CI_PROJECT_NAME" DOCKER_IMAGE_TAG="$IMAGE_TAG" DOCKER_ARCHS="amd64"
+        echo export IMAGE_ARGS=\"--set server.image.repository=$CI_REGISTRY_IMAGE-linux-amd64\" | tee release.env
+        echo export TAG_ARGS=\"--set server.image.tag=$IMAGE_TAG\" | tee -a release.env
+        docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
+        docker push "$CI_REGISTRY_IMAGE-linux-amd64:$IMAGE_TAG"
+      fi
     - cat release.env
   dependencies:
     - compile
