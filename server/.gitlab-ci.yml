@@ -75,10 +75,11 @@ container:
           cp ./prometheus  .build/linux-amd64/
           cp ./promtool .build/linux-amd64/
           make -j $(getconf _NPROCESSORS_ONLN) docker DOCKER_REPO="$CI_REGISTRY" DOCKER_IMAGE_NAME="$CI_PROJECT_NAME/$CI_PROJECT_NAME" DOCKER_IMAGE_TAG="$IMAGE_TAG" DOCKER_ARCHS="amd64"
-          echo export IMAGE_ARGS=\"--set server.image.repository=$CI_REGISTRY_IMAGE-linux-amd64\" | tee release.env
+          docker tag $CI_REGISTRY_IMAGE-linux-amd64:$IMAGE_TAG $CI_REGISTRY_IMAGE:$IMAGE_TAG
+          echo export IMAGE_ARGS=\"--set server.image.repository=$CI_REGISTRY_IMAGE\" | tee release.env
           echo export TAG_ARGS=\"--set server.image.tag=$IMAGE_TAG\" | tee -a release.env
           docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
-          docker push "$CI_REGISTRY_IMAGE-linux-amd64:$IMAGE_TAG"
+          docker push "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
         else
           # Tag/Push using old make file model
           make -j $(getconf _NPROCESSORS_ONLN) docker DOCKER_REPO="$CI_REGISTRY" DOCKER_IMAGE_NAME="$CI_PROJECT_NAME/$CI_PROJECT_NAME" DOCKER_IMAGE_TAG="$IMAGE_TAG" DOCKER_ARCHS="amd64"
