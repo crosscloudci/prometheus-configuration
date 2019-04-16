@@ -74,6 +74,7 @@ container:
           mkdir -p .builds/linux-amd64
           cp ./prometheus  .builds/linux-amd64/
           cp ./promtool .builds/linux-amd64/
+          sleep 100000
           make -j $(getconf _NPROCESSORS_ONLN) docker DOCKER_REPO="$CI_REGISTRY" DOCKER_IMAGE_NAME="$CI_PROJECT_NAME/$CI_PROJECT_NAME" DOCKER_IMAGE_TAG="$IMAGE_TAG" DOCKER_ARCHS="amd64"
           echo export IMAGE_ARGS=\"--set server.image.repository=$CI_REGISTRY_IMAGE-linux-amd64\" | tee release.env
           echo export TAG_ARGS=\"--set server.image.tag=$IMAGE_TAG\" | tee -a release.env
