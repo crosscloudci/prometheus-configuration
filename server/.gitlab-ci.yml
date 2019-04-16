@@ -67,7 +67,7 @@ container:
         echo export IMAGE_ARGS=\"--set server.image.repository=$CI_REGISTRY_IMAGE\" | tee release.env
         echo export TAG_ARGS=\"--set server.image.tag=$IMAGE_TAG\" | tee -a release.env
         docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
-        docker push "$CI_REGISTRY_IMAGE-linux-arm64:$IMAGE_TAG"
+        docker push "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
       else
         echo 'Default to amd64 (Intel)'
         IMAGE_TAG=${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHA_SHORT}.${CI_JOB_ID}.amd64
