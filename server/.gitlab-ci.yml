@@ -31,6 +31,26 @@ compile:
     - >
       if [ "$ARCH" == "arm64" ]; then
         echo 'ARCH set to arm64'
+        # Disable all architectures, except for arm64.
+        sed -i -e '/ linux\/amd64/ s/^/#/' .promu.yml 
+        sed -i -e '/ linux\/386/ s/^/#/' .promu.yml 
+        sed -i -e '/ darwin\/amd64/ s/^/#/' .promu.yml 
+        sed -i -e '/ darwin\/386/ s/^/#/' .promu.yml 
+        sed -i -e '/ windows\/amd64/ s/^/#/' .promu.yml 
+        sed -i -e '/ windows\/386/ s/^/#/' .promu.yml 
+        sed -i -e '/ freebsd\/amd64/ s/^/#/' .promu.yml 
+        sed -i -e '/ freebsd\/386/ s/^/#/' .promu.yml 
+        sed -i -e '/ openbsd\/amd64/ s/^/#/' .promu.yml 
+        sed -i -e '/ openbsd\/386/ s/^/#/' .promu.yml 
+        sed -i -e '/ netbsd\/amd64/ s/^/#/' .promu.yml 
+        sed -i -e '/ netbsd\/386/ s/^/#/' .promu.yml 
+        sed -i -e '/ dragonfly\/amd64/ s/^/#/' .promu.yml 
+        sed -i -e '/ linux\/arm$/ s/^/#/' .promu.yml 
+        sed -i -e '/ freebsd\/arm/ s/^/#/' .promu.yml 
+        sed -i -e '/ netbsd\/arm/ s/^/#/' .promu.yml 
+        sed -i -e '/ linux\/ppc64/ s/^/#/' .promu.yml 
+        sed -i -e '/ linux\/ppc64/ s/^/#/' .promu.yml 
+        sed -i -e '/ linux\/s390x/ s/^/#/' .promu.yml 
         make promu
         promu crossbuild -v
       else
