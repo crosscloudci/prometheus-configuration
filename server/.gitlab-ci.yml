@@ -30,6 +30,10 @@ compile:
   script:
     - >
       if [ "$ARCH" == "arm64" ]; then
+        if [ "$CI_COMMIT_REF_NAME" !== "master" ]; then
+          # Fetch head make file(has arm64 support).
+          wget https://raw.githubusercontent.com/prometheus/prometheus/master/Dockerfile
+        fi
         echo 'ARCH set to arm64'
         # Disable all architectures, except for arm64.
         sed -i -e '/ linux\/amd64/ s/^/#/' .promu.yml 
