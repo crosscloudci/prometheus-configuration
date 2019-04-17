@@ -85,6 +85,7 @@ container:
           rm ./Dockerfile
           rm ./Makefile
           rm ./Makefile.common
+          rm ./.dockerignore
           wget https://raw.githubusercontent.com/prometheus/prometheus/master/Dockerfile
           wget https://raw.githubusercontent.com/prometheus/prometheus/master/Makefile
           wget https://raw.githubusercontent.com/prometheus/prometheus/master/Makefile.common
