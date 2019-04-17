@@ -30,10 +30,6 @@ compile:
   script:
     - >
       if [ "$ARCH" == "arm64" ]; then
-        if [ "$CI_COMMIT_REF_NAME" !== "master" ]; then
-          # Fetch head make file(has arm64 support).
-          wget https://raw.githubusercontent.com/prometheus/prometheus/master/Dockerfile
-        fi
         echo 'ARCH set to arm64'
         # Disable all architectures, except for arm64.
         sed -i -e '/ linux\/amd64/ s/^/#/' .promu.yml 
@@ -84,6 +80,10 @@ container:
     - >
       if [ "$ARCH" == "arm64" ]; then
         echo 'ARCH set to arm64'
+        if [ "$CI_COMMIT_REF_NAME" != "master" ]; then
+          # Fetch head make file(has arm64 support).
+          wget https://raw.githubusercontent.com/prometheus/prometheus/master/Dockerfile
+        fi
         IMAGE_TAG=${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHA_SHORT}.${CI_JOB_ID}.arm64
         docker run --privileged linuxkit/binfmt:v0.6
         make -j $(getconf _NPROCESSORS_ONLN) docker DOCKER_REPO="$CI_REGISTRY" DOCKER_IMAGE_NAME="$CI_PROJECT_NAME/$CI_PROJECT_NAME" DOCKER_IMAGE_TAG="$IMAGE_TAG" DOCKER_ARCHS="arm64"
