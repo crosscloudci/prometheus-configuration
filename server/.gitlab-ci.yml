@@ -81,9 +81,11 @@ container:
       if [ "$ARCH" == "arm64" ]; then
         echo 'ARCH set to arm64'
         if [ "$CI_COMMIT_REF_NAME" != "master" ]; then
-          # Fetch head make file(has arm64 support).
+          # Fetch head make & docker file(has arm64 support).
           rm ./Dockerfile
+          rm ./Makefile
           wget https://raw.githubusercontent.com/prometheus/prometheus/master/Dockerfile
+          wget https://raw.githubusercontent.com/prometheus/prometheus/master/Makefile
         fi
         IMAGE_TAG=${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHA_SHORT}.${CI_JOB_ID}.arm64
         docker run --privileged linuxkit/binfmt:v0.6
