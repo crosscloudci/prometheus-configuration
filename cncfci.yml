@@ -3,3 +3,6 @@ project:
   display_name: Prometheus
   sub_title: Monitoring
   project_url: "https://github.com/prometheus/prometheus"
+  arch:
+    - "amd64"
+    - "arm64"   
