@@ -1,5 +1,8 @@
 project:
-  logo_url: "https://raw.githubusercontent.com/cncf/artwork/master/prometheus/icon/color/prometheus-icon-color.svg?sanitize=true"
+  logo_url: "https://raw.githubusercontent.com/cncf/artwork/master/projects/prometheus/icon/color/prometheus-icon-color.svg?sanitize=true"
   display_name: Prometheus
   sub_title: Monitoring
   project_url: "https://github.com/prometheus/prometheus"
+  arch:
+    - "amd64"
+    - "arm64"   
