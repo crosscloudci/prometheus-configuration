@@ -55,6 +55,7 @@ compile:
         promu crossbuild -v
       else
         echo 'Default to amd64 (Intel)'
+          sleep 100000
           make -j $(getconf _NPROCESSORS_ONLN) deps
           make -j $(getconf _NPROCESSORS_ONLN) build
           make -j $(getconf _NPROCESSORS_ONLN) test
