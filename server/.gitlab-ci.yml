@@ -23,11 +23,12 @@ before_script:
   - source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd
 
 compile:
-  image: crosscloudci/debian-docker-go:latest
+  image: crosscloudci/debian-docker-go:1.13.1-stretch
   stage: Build
   variables:
     CGO_ENABLED: '1'
   script:
+    - apt update && apt install -y yarn
     - >
       if [ "$ARCH" == "arm64" ]; then
         echo 'ARCH set to arm64'
