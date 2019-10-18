@@ -76,7 +76,7 @@ compile:
 
 container:
   stage: Package
-  image: circleci/golang-node
+  image: circleci/golang:1.13-node
   script:
     - >
       if [ "$ARCH" == "arm64" ]; then
