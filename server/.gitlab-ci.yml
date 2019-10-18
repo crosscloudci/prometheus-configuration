@@ -20,7 +20,7 @@ before_script:
     else
       export CROSS_CLOUD_YML="$CROSS_CLOUD_YML"
     fi
-  - source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd
+  # - source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd
 
 compile:
   image: crosscloudci/debian-docker-go:1.13.1-stretch
