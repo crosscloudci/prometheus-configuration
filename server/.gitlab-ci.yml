@@ -79,7 +79,7 @@ container:
       if [ "$ARCH" == "arm64" ] && [ "$CI_COMMIT_REF_NAME" == "master" ]; then
          make -j $(getconf _NPROCESSORS_ONLN) npm_licenses
       fi   
-    - echo make -j $(getconf _NPROCESSORS_ONLN) docker DOCKER_REPO="$CI_REGISTRY" DOCKER_IMAGE_NAME="$CI_PROJECT_NAME/$CI_PROJECT_NAME" DOCKER_IMAGE_TAG="$IMAGE_TAG" DOCKER_ARCHS="$ARCH"
+    - make -j $(getconf _NPROCESSORS_ONLN) docker DOCKER_REPO="$CI_REGISTRY" DOCKER_IMAGE_NAME="$CI_PROJECT_NAME/$CI_PROJECT_NAME" DOCKER_IMAGE_TAG="$IMAGE_TAG" DOCKER_ARCHS="$ARCH"
     - docker tag $CI_REGISTRY_IMAGE-linux-$ARCH:$IMAGE_TAG $CI_REGISTRY_IMAGE:$IMAGE_TAG
     - echo export IMAGE_ARGS=\"--set server.image.repository=$CI_REGISTRY_IMAGE\" | tee release.env
     - echo export TAG_ARGS=\"--set server.image.tag=$IMAGE_TAG\" | tee -a release.env
