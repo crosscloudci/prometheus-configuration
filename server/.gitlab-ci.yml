@@ -51,9 +51,11 @@ compile:
       if [ "$ARCH" == "arm64" ]; then
         echo 'ARCH set to arm64'
         sed -i -e '/ linux\/amd64/ s/^/#/' .promu.yml
+        date +%T -s "10:00:00"
       else
         echo 'ARCH to amd64 (Intel)'
         sed -i -e '/ linux\/arm64/ s/^/#/' .promu.yml
+        date +%T -s "15:00:00"
       fi
     - make promu
     - promu crossbuild -v
