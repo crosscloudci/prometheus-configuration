@@ -76,7 +76,7 @@ compile:
 
 container:
   stage: Package
-  image: crosscloudci/debian-docker-go:latest
+  image: circleci/golang-node
   script:
     - >
       if [ "$ARCH" == "arm64" ]; then
