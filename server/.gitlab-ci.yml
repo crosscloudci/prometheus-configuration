@@ -23,50 +23,47 @@ before_script:
   - source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd
 
 compile:
-  image: crosscloudci/debian-docker-go:latest
+  image: crosscloudci/debian-go-node-docker:1.13-node
   stage: Build
-  variables:
-    CGO_ENABLED: '1'
   script:
+    - sed -i -e '/ linux\/386/ s/^/#/' .promu.yml
+    - sed -i -e '/ darwin\/amd64/ s/^/#/' .promu.yml
+    - sed -i -e '/ darwin\/386/ s/^/#/' .promu.yml
+    - sed -i -e '/ windows\/amd64/ s/^/#/' .promu.yml
+    - sed -i -e '/ windows\/386/ s/^/#/' .promu.yml
+    - sed -i -e '/ freebsd\/amd64/ s/^/#/' .promu.yml
+    - sed -i -e '/ freebsd\/386/ s/^/#/' .promu.yml
+    - sed -i -e '/ openbsd\/amd64/ s/^/#/' .promu.yml
+    - sed -i -e '/ openbsd\/386/ s/^/#/' .promu.yml
+    - sed -i -e '/ openbsd\/arm/ s/^/#/' .promu.yml
+    - sed -i -e '/ netbsd\/amd64/ s/^/#/' .promu.yml
+    - sed -i -e '/ netbsd\/386/ s/^/#/' .promu.yml
+    - sed -i -e '/ dragonfly\/amd64/ s/^/#/' .promu.yml
+    - sed -i -e '/ linux\/arm$/ s/^/#/' .promu.yml
+    - sed -i -e '/ freebsd\/arm/ s/^/#/' .promu.yml
+    - sed -i -e '/ netbsd\/arm/ s/^/#/' .promu.yml
+    - sed -i -e '/ linux\/mips64$/ s/^/#/' .promu.yml
+    - sed -i -e '/ linux\/mips64le/ s/^/#/' .promu.yml
+    - sed -i -e '/ linux\/ppc64$/ s/^/#/' .promu.yml
+    - sed -i -e '/ linux\/ppc64le/ s/^/#/' .promu.yml
+    - sed -i -e '/ linux\/s390x/ s/^/#/' .promu.yml
     - >
       if [ "$ARCH" == "arm64" ]; then
         echo 'ARCH set to arm64'
-        # Disable all architectures, except for arm64.
-        sed -i -e '/ linux\/amd64/ s/^/#/' .promu.yml 
-        sed -i -e '/ linux\/386/ s/^/#/' .promu.yml 
-        sed -i -e '/ darwin\/amd64/ s/^/#/' .promu.yml 
-        sed -i -e '/ darwin\/386/ s/^/#/' .promu.yml 
-        sed -i -e '/ windows\/amd64/ s/^/#/' .promu.yml 
-        sed -i -e '/ windows\/386/ s/^/#/' .promu.yml 
-        sed -i -e '/ freebsd\/amd64/ s/^/#/' .promu.yml 
-        sed -i -e '/ freebsd\/386/ s/^/#/' .promu.yml 
-        sed -i -e '/ openbsd\/amd64/ s/^/#/' .promu.yml 
-        sed -i -e '/ openbsd\/386/ s/^/#/' .promu.yml 
-        sed -i -e '/ netbsd\/amd64/ s/^/#/' .promu.yml 
-        sed -i -e '/ netbsd\/386/ s/^/#/' .promu.yml 
-        sed -i -e '/ dragonfly\/amd64/ s/^/#/' .promu.yml 
-        sed -i -e '/ linux\/arm$/ s/^/#/' .promu.yml 
-        sed -i -e '/ freebsd\/arm/ s/^/#/' .promu.yml 
-        sed -i -e '/ netbsd\/arm/ s/^/#/' .promu.yml 
-        sed -i -e '/ linux\/ppc64/ s/^/#/' .promu.yml 
-        sed -i -e '/ linux\/ppc64/ s/^/#/' .promu.yml 
-        sed -i -e '/ linux\/s390x/ s/^/#/' .promu.yml 
-        make promu
-        promu crossbuild -v
+        sed -i -e '/ linux\/amd64/ s/^/#/' .promu.yml
       else
-        echo 'Default to amd64 (Intel)'
-          make -j $(getconf _NPROCESSORS_ONLN) deps
-          make -j $(getconf _NPROCESSORS_ONLN) build
-          make -j $(getconf _NPROCESSORS_ONLN) test
-        if [ "$CI_COMMIT_REF_NAME" = "master" ]; then
-          # If building master copy bins to new .build dir
-          mkdir -p .builds/linux-amd64
-          cp ./prometheus  .builds/linux-amd64
-          cp ./promtool .builds/linux-amd64/
-        else
-          exit 0
-        fi
+        echo 'ARCH to amd64 (Intel)'
+        sed -i -e '/ linux\/arm64/ s/^/#/' .promu.yml
       fi
+    - make promu
+    - promu crossbuild -v
+    - >
+      if [ "$ARCH" == "amd64" ]; then
+        echo 'ARCH set to amd64 (Intel)'
+        make -j $(getconf _NPROCESSORS_ONLN) test
+      fi
+
+
   artifacts:
     name: "${CI_JOB_NAME}_${CI_COMMIT_REF_NAME}"
     untracked: true
@@ -75,32 +72,19 @@ compile:
 
 container:
   stage: Package
-  image: crosscloudci/debian-docker-go:latest
+  image: crosscloudci/debian-go-node-docker:1.13-node
   script:
+    - IMAGE_TAG=${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHA_SHORT}.${CI_JOB_ID}.${ARCH}
     - >
-      if [ "$ARCH" == "arm64" ]; then
-        echo 'ARCH set to arm64'
-        IMAGE_TAG=${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHA_SHORT}.${CI_JOB_ID}.arm64
-        docker run --privileged linuxkit/binfmt:v0.6
-        make -j $(getconf _NPROCESSORS_ONLN) docker DOCKER_REPO="$CI_REGISTRY" DOCKER_IMAGE_NAME="$CI_PROJECT_NAME/$CI_PROJECT_NAME" DOCKER_IMAGE_TAG="$IMAGE_TAG" DOCKER_ARCHS="arm64"
-        docker tag $CI_REGISTRY_IMAGE-linux-arm64:$IMAGE_TAG $CI_REGISTRY_IMAGE:$IMAGE_TAG
-        echo export IMAGE_ARGS=\"--set server.image.repository=$CI_REGISTRY_IMAGE\" | tee release.env
-        echo export TAG_ARGS=\"--set server.image.tag=$IMAGE_TAG\" | tee -a release.env
-        docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
-        docker push "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
-      else
-        echo 'Default to amd64 (Intel)'
-        IMAGE_TAG=${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHA_SHORT}.${CI_JOB_ID}.amd64
-        mkdir -p .build/linux-amd64
-        cp ./prometheus  .build/linux-amd64/
-        cp ./promtool .build/linux-amd64/
-        make -j $(getconf _NPROCESSORS_ONLN) docker DOCKER_REPO="$CI_REGISTRY" DOCKER_IMAGE_NAME="$CI_PROJECT_NAME/$CI_PROJECT_NAME" DOCKER_IMAGE_TAG="$IMAGE_TAG" DOCKER_ARCHS="amd64"
-        docker tag $CI_REGISTRY_IMAGE-linux-amd64:$IMAGE_TAG $CI_REGISTRY_IMAGE:$IMAGE_TAG
-        echo export IMAGE_ARGS=\"--set server.image.repository=$CI_REGISTRY_IMAGE\" | tee release.env
-        echo export TAG_ARGS=\"--set server.image.tag=$IMAGE_TAG\" | tee -a release.env
-        docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
-        docker push "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
-      fi
+      if [ "$ARCH" == "arm64" ] && [ "$CI_COMMIT_REF_NAME" == "master" ]; then
+         make -j $(getconf _NPROCESSORS_ONLN) npm_licenses
+      fi   
+    - make -j $(getconf _NPROCESSORS_ONLN) docker DOCKER_REPO="$CI_REGISTRY" DOCKER_IMAGE_NAME="$CI_PROJECT_NAME/$CI_PROJECT_NAME" DOCKER_IMAGE_TAG="$IMAGE_TAG" DOCKER_ARCHS="$ARCH"
+    - docker tag $CI_REGISTRY_IMAGE-linux-$ARCH:$IMAGE_TAG $CI_REGISTRY_IMAGE:$IMAGE_TAG
+    - echo export IMAGE_ARGS=\"--set server.image.repository=$CI_REGISTRY_IMAGE\" | tee release.env
+    - echo export TAG_ARGS=\"--set server.image.tag=$IMAGE_TAG\" | tee -a release.env
+    - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
+    - docker push "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
     - cat release.env
   dependencies:
     - compile
