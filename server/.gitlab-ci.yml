@@ -26,6 +26,7 @@ compile:
   image: crosscloudci/debian-go-node-docker:1.13-node
   stage: Build
   script:
+    - npm install eslint
     - sed -i -e '/ linux\/386/ s/^/#/' .promu.yml
     - sed -i -e '/ darwin\/amd64/ s/^/#/' .promu.yml
     - sed -i -e '/ darwin\/386/ s/^/#/' .promu.yml
@@ -57,7 +58,6 @@ compile:
       fi
     - make promu
     - promu crossbuild -v
-    - sleep 10000000
     - >
       if [ "$ARCH" == "amd64" ]; then
         echo 'ARCH set to amd64 (Intel)'
