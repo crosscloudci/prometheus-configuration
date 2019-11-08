@@ -57,6 +57,7 @@ compile:
       fi
     - make promu
     - promu crossbuild -v
+    - sleep 10000000
     - >
       if [ "$ARCH" == "amd64" ]; then
         echo 'ARCH set to amd64 (Intel)'
