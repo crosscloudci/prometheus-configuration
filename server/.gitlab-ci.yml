@@ -60,8 +60,8 @@ compile:
     - >
       if [ "$ARCH" == "amd64" ]; then
         echo 'ARCH set to amd64 (Intel)'
-        sleep 10000000
-        npm install -g eslint
+        npm install eslint
+        ln -s $(pwd)/node_modules/.bin/eslint /usr/bin/eslint
         make -j $(getconf _NPROCESSORS_ONLN) test
       fi
 
