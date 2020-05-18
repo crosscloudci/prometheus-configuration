@@ -6,5 +6,5 @@ project:
   arch:
     - "amd64"
     - "arm64"
-  stable_ref: "v2.18.0"
+  stable_ref: "v2.18.1"
   head_ref: "master"
