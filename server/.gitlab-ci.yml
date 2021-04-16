@@ -11,7 +11,7 @@ before_script:
        export CROSS_CLOUD_YML="https://raw.githubusercontent.com/CrossCloudCI/cncf-configuration/master/cross-cloud.yml"
        export DASHBOARD_API_HOST_PORT="devapi.cncf.ci"
     fi
-  - /bin/bash -c "source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; rvm use ruby-2.3.0 ; cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd"
+  - source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; rvm use ruby-2.3.0 ; cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd
 
 compile:
   image: crosscloudci/debian-go-node-docker:1.13-node
