@@ -23,6 +23,7 @@ compile:
     - sed -i -e '/ openbsd/ s/^/#/' .promu.yml
     - sed -i -e '/ netbsd/ s/^/#/' .promu.yml
     - sed -i -e '/ dragonfly/ s/^/#/' .promu.yml
+    - sed -i -e '/ illumos/ s/^/#/' .promu.yml
     - >
       if [ "$ARCH" == "arm64" ]; then
         echo 'ARCH set to arm64'
@@ -31,7 +32,6 @@ compile:
         echo 'ARCH to amd64 (Intel)'
         sed -i -e 's|linux|linux\/amd64|' .promu.yml
       fi
-    - sleep 100000
     - make promu
     - promu crossbuild -v
     - >
