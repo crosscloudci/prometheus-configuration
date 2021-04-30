@@ -17,34 +17,19 @@ compile:
   image: crosscloudci/debian-go-node-docker:1.16.3-node
   stage: Build
   script:
-    - sed -i -e '/ linux\/386/ s/^/#/' .promu.yml
-    - sed -i -e '/ darwin\/amd64/ s/^/#/' .promu.yml
-    - sed -i -e '/ darwin\/386/ s/^/#/' .promu.yml
-    - sed -i -e '/ windows\/amd64/ s/^/#/' .promu.yml
-    - sed -i -e '/ windows\/386/ s/^/#/' .promu.yml
-    - sed -i -e '/ freebsd\/amd64/ s/^/#/' .promu.yml
-    - sed -i -e '/ freebsd\/386/ s/^/#/' .promu.yml
-    - sed -i -e '/ openbsd\/amd64/ s/^/#/' .promu.yml
-    - sed -i -e '/ openbsd\/386/ s/^/#/' .promu.yml
-    - sed -i -e '/ openbsd\/arm/ s/^/#/' .promu.yml
-    - sed -i -e '/ netbsd\/amd64/ s/^/#/' .promu.yml
-    - sed -i -e '/ netbsd\/386/ s/^/#/' .promu.yml
-    - sed -i -e '/ dragonfly\/amd64/ s/^/#/' .promu.yml
-    - sed -i -e '/ linux\/arm$/ s/^/#/' .promu.yml
-    - sed -i -e '/ freebsd\/arm/ s/^/#/' .promu.yml
-    - sed -i -e '/ netbsd\/arm/ s/^/#/' .promu.yml
-    - sed -i -e '/ linux\/mips64$/ s/^/#/' .promu.yml
-    - sed -i -e '/ linux\/mips64le/ s/^/#/' .promu.yml
-    - sed -i -e '/ linux\/ppc64$/ s/^/#/' .promu.yml
-    - sed -i -e '/ linux\/ppc64le/ s/^/#/' .promu.yml
-    - sed -i -e '/ linux\/s390x/ s/^/#/' .promu.yml
+    - sed -i -e '/ darwin/ s/^/#/' .promu.yml
+    - sed -i -e '/ windows/ s/^/#/' .promu.yml
+    - sed -i -e '/ freebsd/ s/^/#/' .promu.yml
+    - sed -i -e '/ openbsd/ s/^/#/' .promu.yml
+    - sed -i -e '/ netbsd/ s/^/#/' .promu.yml
+    - sed -i -e '/ dragonfly/ s/^/#/' .promu.yml
     - >
       if [ "$ARCH" == "arm64" ]; then
         echo 'ARCH set to arm64'
-        sed -i -e '/ linux\/amd64/ s/^/#/' .promu.yml
+        sed -i -e 's|linux|linux\/arm64|' .promu.yml
       else
         echo 'ARCH to amd64 (Intel)'
-        sed -i -e '/ linux\/arm64/ s/^/#/' .promu.yml
+        sed -i -e 's|linux|linux\/amd64|' .promu.yml
       fi
     - sleep 100000
     - make promu
