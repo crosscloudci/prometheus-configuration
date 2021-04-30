@@ -14,7 +14,7 @@ before_script:
   - source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; rvm use ruby-2.6.3 ; cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd
 
 compile:
-  image: crosscloudci/debian-go-node-docker:1.13-node
+  image: crosscloudci/debian-go-node-docker:1.16.3-node
   stage: Build
   script:
     - sed -i -e '/ linux\/386/ s/^/#/' .promu.yml
@@ -46,6 +46,7 @@ compile:
         echo 'ARCH to amd64 (Intel)'
         sed -i -e '/ linux\/arm64/ s/^/#/' .promu.yml
       fi
+    - sleep 100000
     - make promu
     - promu crossbuild -v
     - >
@@ -63,7 +64,7 @@ compile:
 
 container:
   stage: Package
-  image: crosscloudci/debian-go-node-docker:1.13-node
+  image: crosscloudci/debian-go-node-docker:1.16.3-node
   script:
     - IMAGE_TAG=${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHA_SHORT}.${CI_JOB_ID}.${ARCH}
     - make -j $(getconf _NPROCESSORS_ONLN) npm_licenses
