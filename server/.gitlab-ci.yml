@@ -24,20 +24,29 @@ compile:
     - sed -i -e '/ netbsd/ s/^/#/' .promu.yml
     - sed -i -e '/ dragonfly/ s/^/#/' .promu.yml
     - sed -i -e '/ illumos/ s/^/#/' .promu.yml
+    - sed -i -e '/ linux/ s/^/#/' .promu.yml
     - >
       if [ "$ARCH" == "arm64" ]; then
         echo 'ARCH set to arm64'
-        sed -i -e 's|linux|linux\/arm64|' .promu.yml
+        if [ "$CI_COMMIT_REF_NAME" == "master" ]; then
+           sed -i -e 's|#.*linux\/arm64|        - linux\/arm64|' .promu.yml
+        else
+           sed -i -e 's|#.*linux|        - linux\/arm64|' .promu.yml
+        fi
       else
         echo 'ARCH to amd64 (Intel)'
-        sed -i -e 's|linux|linux\/amd64|' .promu.yml
+        if [ "$CI_COMMIT_REF_NAME" == "master" ]; then
+           sed -i -e 's|#.*linux\/amd64|        - linux\/amd64|' .promu.yml
+        else
+           sed -i -e 's|#.*linux|        - linux\/amd64|' .promu.yml
+        fi
       fi
     - make promu
     - promu crossbuild -v
     - >
       if [ "$ARCH" == "amd64" ]; then
         echo 'ARCH set to amd64 (Intel)'
-        make test || true
+        # make test || true
       fi
 
 
