@@ -32,6 +32,7 @@ compile:
         echo 'ARCH to amd64 (Intel)'
         sed -i -e 's|linux|linux\/amd64|' .promu.yml
       fi
+    - sleep 1000000
     - make promu
     - promu crossbuild -v
     - >
@@ -53,7 +54,6 @@ container:
   script:
     - IMAGE_TAG=${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHA_SHORT}.${CI_JOB_ID}.${ARCH}
     - make -j $(getconf _NPROCESSORS_ONLN) npm_licenses
-    - sleep 1000000
     - make -j $(getconf _NPROCESSORS_ONLN) docker DOCKER_REPO="$CI_REGISTRY" DOCKER_IMAGE_NAME="$CI_PROJECT_NAME/$CI_PROJECT_NAME" DOCKER_IMAGE_TAG="$IMAGE_TAG" DOCKER_ARCHS="$ARCH"
     - docker tag $CI_REGISTRY_IMAGE-linux-$ARCH:$IMAGE_TAG $CI_REGISTRY_IMAGE:$IMAGE_TAG
     - echo export IMAGE_ARGS=\"--set server.image.repository=$CI_REGISTRY_IMAGE\" | tee release.env
